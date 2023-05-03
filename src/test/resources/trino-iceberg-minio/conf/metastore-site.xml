@@ -1,22 +1,21 @@
 <configuration>
+
     <property>
         <name>metastore.thrift.uris</name>
         <value>thrift://hive-metastore:9083</value>
         <description>Thrift URI for the remote metastore. Used by metastore client to connect to remote metastore.</description>
-    </property>
-    <property>
-        <name>hive.metastore.event.db.notification.api.auth</name>
-        <value>false</value>
     </property>
 
     <property>
         <name>metastore.task.threads.always</name>
         <value>org.apache.hadoop.hive.metastore.events.EventCleanerTask,org.apache.hadoop.hive.metastore.MaterializationsCacheCleanerTask</value>
     </property>
+
     <property>
         <name>metastore.expression.proxy</name>
         <value>org.apache.hadoop.hive.metastore.DefaultPartitionExpressionProxy</value>
     </property>
+
     <property>
         <name>javax.jdo.option.ConnectionDriverName</name>
         <value>com.mysql.cj.jdbc.Driver</value>
@@ -38,26 +37,20 @@
     </property>
 
     <property>
-        <name>fs.s3.impl</name>
-        <value>org.apache.hadoop.fs.s3a.S3AFileSystem</value>
-    </property>
-    <property>
-        <name>fs.s3a.impl</name>
-        <value>org.apache.hadoop.fs.s3a.S3AFileSystem</value>
+        <name>fs.s3a.access.key</name>
+        <value>minio</value>
     </property>
 
     <property>
-        <name>fs.s3a.access.key</name>
-        <value>AKIAIOSFODNN7EXAMPLE</value>
-    </property>
-    <property>
         <name>fs.s3a.secret.key</name>
-        <value>wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY</value>
+        <value>minio123</value>
     </property>
+
     <property>
         <name>fs.s3a.endpoint</name>
-        <value>http://lakefs:8000</value>
+        <value>http://minio:9000</value>
     </property>
+
     <property>
         <name>fs.s3a.path.style.access</name>
         <value>true</value>

@@ -24,7 +24,7 @@ public class TestTrinoContainer {
     
     @ClassRule
     public static DockerComposeContainer TRINO =
-            new DockerComposeContainer("trino-iceberg", new File("src/test/resources/trino-iceberg/docker-compose.yml"))
+            new DockerComposeContainer("trino-iceberg", new File("src/test/resources/trino-iceberg-minio/docker-compose.yml"))
                     .withOptions("--compatibility")
                     .withExposedService(TRINO_SERVICE_NAME, 8080)
                     .waitingFor(TRINO_SERVICE_NAME, Wait.forLogMessage(".*SERVER.*STARTED.*", 1))
@@ -55,7 +55,9 @@ public class TestTrinoContainer {
         try (Connection connection = this.createConnection();
              Statement statement = connection.createStatement()) {
             // Prepare data
-            statement.execute("CREATE TABLE iceberg.default.example_iceberg_table ( c1 integer, c2 date, c3 double) WITH (format = 'PARQUET')");
+            statement.execute("CREATE TABLE iceberg.main.example_iceberg_table " +
+                    "( c1 integer, c2 date, c3 double) " +
+                    "WITH (format = 'PARQUET' )");
             //statement.execute("CREATE TABLE memory.default.table_with_array AS SELECT 1 id, ARRAY[1, 42, 2, 42, 4, 42] my_array");
 
             // Query Trino using newly created table and a builtin connector
