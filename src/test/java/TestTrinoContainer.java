@@ -12,6 +12,7 @@ import java.sql.Driver;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,13 +22,15 @@ public class TestTrinoContainer {
 
 
     public static String TRINO_SERVICE_NAME = "trino_1";
-    
+
     @ClassRule
     public static DockerComposeContainer TRINO =
             new DockerComposeContainer("trino-iceberg", new File("src/test/resources/trino-iceberg-minio/docker-compose.yml"))
                     .withOptions("--compatibility")
                     .withExposedService(TRINO_SERVICE_NAME, 8080)
-                    .waitingFor(TRINO_SERVICE_NAME, Wait.forLogMessage(".*SERVER.*STARTED.*", 1))
+                    .waitingFor(TRINO_SERVICE_NAME, Wait.forLogMessage(".*trino.*Server.*====.*SERVER.*STARTED.*====.*", 1)
+                            .withStartupTimeout(Duration.ofMinutes(3))
+                    )
                     .withLocalCompose(true);
 
     public String getJdbcUrl() {
@@ -46,16 +49,20 @@ public class TestTrinoContainer {
         return null;
     }
 
-    @Test
-    public void queryMemoryAndTpchConnectors() throws SQLException {
+    public void start() {
         System.out.println("pre-start");
         TRINO.start();
         System.out.println("post-start");
+    }
 
+    @Test
+    public void queryMemoryAndTpchConnectors() throws SQLException {
+        this.start();
         try (Connection connection = this.createConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("CREATE SCHEMA IF NOT EXISTS iceberg.datalake");
             // Prepare data
-            statement.execute("CREATE TABLE iceberg.main.example_iceberg_table " +
+            statement.execute("CREATE TABLE iceberg.datalake.example_iceberg_table " +
                     "( c1 integer, c2 date, c3 double) " +
                     "WITH (format = 'PARQUET' )");
             //statement.execute("CREATE TABLE memory.default.table_with_array AS SELECT 1 id, ARRAY[1, 42, 2, 42, 4, 42] my_array");
@@ -74,12 +81,12 @@ public class TestTrinoContainer {
                 Assert.assertEquals(Arrays.asList(2, 4, 42, 42, 42), actualElements);
             }
         }
-        
-        System.out.println(TRINO.getServicePort(TRINO_SERVICE_NAME, 8080));
-        System.out.println(this.getJdbcUrl());
-        System.out.println(this.getUsername());
-        System.out.println(this.getPassword());
-        System.out.println(this.getDatabaseName());
+
+//        System.out.println(TRINO.getServicePort(TRINO_SERVICE_NAME, 8080));
+//        System.out.println(this.getJdbcUrl());
+//        System.out.println(this.getUsername());
+//        System.out.println(this.getPassword());
+//        System.out.println(this.getDatabaseName());
     }
 
 

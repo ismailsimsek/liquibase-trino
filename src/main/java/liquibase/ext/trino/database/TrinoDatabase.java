@@ -16,9 +16,6 @@ public class TrinoDatabase extends AbstractJdbcDatabase {
     public static final int TRINO_PRIORITY_DATABASE = 510;
     
     public TrinoDatabase() {
-        // @TODO override parent method??!? enforce user to set them!
-        this.setLiquibaseCatalogName("iceberg");
-        this.setLiquibaseSchemaName("public");
         super.setCurrentDateTimeFunction("current_timestamp::timestamp_ntz");
         super.unmodifiableDataTypes.addAll(Arrays.asList(
                 "integer",
@@ -36,6 +33,11 @@ public class TrinoDatabase extends AbstractJdbcDatabase {
         super.unquotedObjectsAreUppercased = false;
         super.addReservedWords(getDefaultReservedWords());
     }
+    
+    // @TODO enforce user to set it with config
+    //String getLiquibaseCatalogName();
+    // @TODO enforce user to set it with config
+    //String getLiquibaseSchemaName();
     
     @Override
     public boolean supportsCatalogInObjectName(final Class<? extends DatabaseObject> type) {

@@ -17,11 +17,10 @@ import java.io.File;
 
 public class TrinoIT {
 
-    @Rule
-    public TrinoContainer trinoSql = new TrinoContainer("trinodb/trino:352")
-            .waitingFor(Wait.forLogMessage(".*SERVER.*STARTED.*", 1));
     public Liquibase liquibase;
     public DatabaseConnection connection;
+    @Rule
+    public TrinoContainer trinoSql = new TrinoContainer("trinodb/trino");
 
     @Before
     public void setup() throws LiquibaseException {
@@ -42,6 +41,8 @@ public class TrinoIT {
         System.out.println("getConnectionUserName => " + connection.getConnectionUserName());
         
         Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
+        database.setDefaultCatalogName("memory");
+        database.setDefaultSchemaName("default");
         File resourcesDirectory = new File("src/test/resources/trino.xml");
         DatabaseChangeLog cl = new DatabaseChangeLog(resourcesDirectory.getAbsolutePath());
         liquibase = new Liquibase(cl, new ClassLoaderResourceAccessor(), database);

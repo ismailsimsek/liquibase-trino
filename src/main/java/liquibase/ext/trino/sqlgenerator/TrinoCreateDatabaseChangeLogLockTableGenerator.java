@@ -18,7 +18,6 @@ public class TrinoCreateDatabaseChangeLogLockTableGenerator extends CreateDataba
     public Sql[] generateSql(CreateDatabaseChangeLogLockTableStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
         String charTypeName = getCharTypeName(database);
         String dateTimeTypeString = getDateTimeTypeString(database);
-        System.out.println("getLiquibaseCatalogName =>" + database.getLiquibaseCatalogName() + "  getLiquibaseSchemaName is=> " + database.getLiquibaseSchemaName() );
         CreateTableStatement createTableStatement = new CreateTableStatement(database.getLiquibaseCatalogName(), database.getLiquibaseSchemaName(), database.getDatabaseChangeLogLockTableName())
                 .setTablespace(database.getLiquibaseTablespaceName())
                 .addColumn("ID", DataTypeFactory.getInstance().fromDescription("int", database), null, null, new NotNullConstraint())
@@ -39,6 +38,11 @@ public class TrinoCreateDatabaseChangeLogLockTableGenerator extends CreateDataba
     @Override
     protected String getCharTypeName(Database database) {
         return database instanceof TrinoDatabase ? "string" : "varchar";
+    }
+
+    @Override
+    protected String getDateTimeTypeString(Database database) {
+        return database instanceof TrinoDatabase ? "timestamp" : "datetime";
     }
 
 }
